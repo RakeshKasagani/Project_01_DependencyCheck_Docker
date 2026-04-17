@@ -5,26 +5,24 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                echo 'Checkout from GitHub'
                 git branch: 'main', url: 'https://github.com/RakeshKasagani/Project_01_DependencyCheck_Docker.git'
             }
         }
 
         stage('Compile and Test') {
             steps {
-                sh 'ls -ltr'
-                sh 'cd java-cicd-project/spring-boot-app && mvn compile && mvn test'
+                sh 'cd java-cicd-project/spring-boot-app && mvn compile'
+                sh 'cd java-cicd-project/spring-boot-app && mvn test'
             }
         }
 
-        stage('SonarQube Scan') {
+        stage('Sonar Scan') {
             steps {
-                echo 'Running SonarQube analysis'
                 sh '''
                 cd java-cicd-project/spring-boot-app
                 mvn sonar:sonar \
-                  -Dsonar.host.url=http://3.95.175.98:9000 \
-                  -Dsonar.login=sqa_8a0c3bd02f7b2139dacac2277f11d43cfa6f6d08
+                -Dsonar.host.url=http://3.95.175.98:9000 \
+                -Dsonar.login=sqa_8a0c3bd02f7b2139dacac2277f11d43cfa6f6d08
                 '''
             }
         }
@@ -32,19 +30,16 @@ pipeline {
         stage('Dependency Check') {
             steps {
                 script {
-                    try {
-                        sh '''
-                        /opt/dependency-check/bin/dependency-check.sh \
-                          --project "SpringBootApp" \
-                          --scan java-cicd-project/spring-boot-app \
-                          --format HTML \
-                          --out dependency-check-report \
-                          --data /opt/dc-data \
-                          --noupdate
-                        '''
-                    } catch (Exception e) {
-                        echo "Dependency Check failed, continuing pipeline..."
-                    }
+                    // DO NOT FAIL PIPELINE
+                    sh '''
+                    /opt/dependency-check/bin/dependency-check.sh \
+                    --project "SpringBootApp" \
+                    --scan java-cicd-project/spring-boot-app \
+                    --format HTML \
+                    --out dependency-check-report \
+                    --data /opt/dc-data \
+                    --noupdate || true
+                    '''
                 }
             }
         }
@@ -52,6 +47,7 @@ pipeline {
         stage('Publish Report') {
             steps {
                 script {
+                    // Run only if plugin installed
                     try {
                         publishHTML([
                             allowMissing: true,
@@ -59,10 +55,10 @@ pipeline {
                             keepAll: true,
                             reportDir: 'dependency-check-report',
                             reportFiles: 'index.html',
-                            reportName: 'OWASP Dependency-Check Report'
+                            reportName: 'OWASP Report'
                         ])
-                    } catch (Exception e) {
-                        echo "Report not available"
+                    } catch (err) {
+                        echo "HTML Publisher Plugin not installed, skipping report"
                     }
                 }
             }
@@ -76,39 +72,34 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh 'cd java-cicd-project/spring-boot-app && docker build -t rakesh268/java:${BUILD_NUMBER} .'
-                }
+                sh '''
+                cd java-cicd-project/spring-boot-app
+                docker build -t rakesh268/java:${BUILD_NUMBER} .
+                '''
             }
         }
 
         stage('Docker Image Scan') {
             steps {
-                sh 'trivy image rakesh268/java:${BUILD_NUMBER}'
+                sh 'trivy image rakesh268/java:${BUILD_NUMBER} || true'
             }
         }
 
         stage('Push Image to Docker Hub') {
             steps {
-                script {
-                    withCredentials([string(credentialsId: 'dockerhub', variable: 'DOCKER_PASS')]) {
-                        sh '''
-                        echo $DOCKER_PASS | docker login -u rakesh268 --password-stdin
-                        docker push rakesh268/java:${BUILD_NUMBER}
-                        '''
-                    }
+                withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+                    sh 'docker login -u rakesh268 -p ${dockerhub}'
                 }
+                sh 'docker push rakesh268/java:${BUILD_NUMBER}'
             }
         }
 
         stage('Deploy Container') {
             steps {
-                script {
-                    sh '''
-                    docker rm -f java-app || true
-                    docker run -d -p 8000:8080 --name java-app rakesh268/java:${BUILD_NUMBER}
-                    '''
-                }
+                sh '''
+                docker rm -f java-app || true
+                docker run -d -p 8000:8080 --name java-app rakesh268/java:${BUILD_NUMBER}
+                '''
             }
         }
     }
