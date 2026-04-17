@@ -88,7 +88,7 @@ Install the following plugins via **Manage Jenkins > Manage Plugins > Available*
 | Docker Pipeline          | Docker integration in pipelines  |
 | Pipeline: Stage View     | Visualize pipeline stages        |
 | OWASP Dependency-Check   | Scan dependencies for vulnerabilities |
-  HTML Publisher
+  HTML Publisher             Publish and view reports
 
 
 ## Credentials Setup in Jenkins
@@ -171,13 +171,13 @@ source /etc/profile.d/dependency-check.sh
 ```
 ## run commands
 ```
- ls /opt/dependency-check,
-dependency-check.sh --version,
-export PATH=$PATH:/opt/dependency-check/bin,
- source /etc/profile.d/dependency-check.sh,
-dependency-check.sh,
-sudo mkdir -p /opt/dc-data,
-sudo chmod -R 777 /opt/dc-data,
+ ls /opt/dependency-check
+dependency-check.sh --version
+export PATH=$PATH:/opt/dependency-check/bin
+ source /etc/profile.d/dependency-check.sh
+dependency-check.sh
+sudo mkdir -p /opt/dc-data
+sudo chmod -R 777 /opt/dc-data
 ```
 
 ### Integrate with Jenkins
