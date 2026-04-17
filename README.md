@@ -88,7 +88,7 @@ Install the following plugins via **Manage Jenkins > Manage Plugins > Available*
 | Docker Pipeline          | Docker integration in pipelines  |
 | Pipeline: Stage View     | Visualize pipeline stages        |
 | OWASP Dependency-Check   | Scan dependencies for vulnerabilities |
-  HTML Publisher             Publish and view reports
+  HTML Publisher                Publish and view reports
 
 
 ## Credentials Setup in Jenkins
