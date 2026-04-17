@@ -107,7 +107,7 @@ Configure global credentials in **Manage Jenkins > Manage Credentials > System >
 3. Login with default credentials: `admin` / `admin`.
 4. Go to **My Account > Security > Generate Tokens**.
 5. Create a token (e.g., name: "Jenkins Token").
-6. In Jenkins:
+6. In Jenkins: 
    - **Kind**: Secret text
    - **Secret**: Paste the generated token
    - **ID**: `sonar-token`
