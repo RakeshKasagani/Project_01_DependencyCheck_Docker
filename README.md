@@ -37,6 +37,8 @@ The pipeline automates:
 ## Install git
 ```
 sudo yum install git -y
+
+git --version
 ```
 
 ## Install maven
