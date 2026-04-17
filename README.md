@@ -34,7 +34,15 @@ The pipeline automates:
    ```
    sudo yum update -y
    ```
+## Install git
+'''
+sudo yum install git -y
+'''
 
+## Install maven
+'''
+sudo yum install maven -y
+'''
 ## Installing Jenkins
 
 Install Jenkins on the EC2 instance using the following commands:
@@ -80,7 +88,7 @@ Install the following plugins via **Manage Jenkins > Manage Plugins > Available*
 | Docker Pipeline          | Docker integration in pipelines  |
 | Pipeline: Stage View     | Visualize pipeline stages        |
 | OWASP Dependency-Check   | Scan dependencies for vulnerabilities |
-
+  HTML Publisher
 Restart Jenkins after installation.
 
 ## Credentials Setup in Jenkins
@@ -105,6 +113,14 @@ Configure global credentials in **Manage Jenkins > Manage Credentials > System >
    - **ID**: `sonar-token`
    - **Description**: SonarQube authentication token
 
+### Jenkins Credentials
+Add credentials in Jenkins:
+
+Go to:
+Manage Jenkins → Credentials
+Add:
+Username + Password OR
+Personal Access Token (recommended for GitHub)
 ## SonarQube Setup
 
 ### Create SonarQube Container
