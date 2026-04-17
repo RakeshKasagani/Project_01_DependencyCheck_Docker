@@ -35,13 +35,11 @@ pipeline {
 stage('Dependency Check') {
     steps {
         sh '''
-          /opt/dependency-check/bin/dependency-check.sh \
-          --project "SpringBootApp" \
-          --scan java-cicd-project/spring-boot-app \
-          --format HTML \
-          --data $WORKSPACE/odc-data \
-          --out dependency-check-report\
-		  --noupdate
+          dependency-check.sh \
+  --project "SpringBootApp" \
+  --scan java-cicd-project/spring-boot-app \
+  --format HTML \
+  --out dependency-check-report
         '''
     }
 }
