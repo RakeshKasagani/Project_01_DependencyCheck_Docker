@@ -211,7 +211,7 @@ Create a new Pipeline job in Jenkins (e.g., name: `spring-boot-cicd`):
 - **Source Code Management**: Git (repository URL: your repo).
 - **Pipeline**: Pipeline script from SCM or inline script.
 - **branch**: main
-- **path**: 
+- **path**: java-cicd-project/spring-boot-app/Jenkinsfile
 
 Use the following Jenkinsfile (or inline pipeline script). Place the repository code in `java-cicd-project/spring-boot-app`.
 
