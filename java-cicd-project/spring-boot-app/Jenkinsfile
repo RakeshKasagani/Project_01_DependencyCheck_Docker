@@ -40,7 +40,7 @@ stage('Dependency Check') {
           --scan java-cicd-project/spring-boot-app \
           --format HTML \
           --data $WORKSPACE/odc-data \
-          --out dependency-check-report
+          --out dependency-check-report\
 		  --noupdate
         '''
     }
