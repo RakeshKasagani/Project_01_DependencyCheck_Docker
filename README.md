@@ -100,27 +100,7 @@ Configure global credentials in **Manage Jenkins > Manage Credentials > System >
 - **Secret**: Your Docker Hub password
 - **ID**: `dockerhub`
 - **Description**: Docker Hub password for pushing images
-
-### SonarQube Token
-1. Start SonarQube container (see below).
-2. Access SonarQube at `http://<EC2-Public-IP>:9000`.
-3. Login with default credentials: `admin` / `admin`.
-4. Go to **My Account > Security > Generate Tokens**.
-5. Create a token (e.g., name: "Jenkins Token").
-6. In Jenkins: 
-   - **Kind**: Secret text
-   - **Secret**: Paste the generated token
-   - **ID**: `sonar-token`
-   - **Description**: SonarQube authentication token
-
-### Jenkins Credentials
-Add credentials in Jenkins:
-
-Go to:
-Manage Jenkins → Credentials
-Add:
-Username + Password OR
-Personal Access Token (recommended for GitHub)
+- 
 ## SonarQube Setup
 
 ### Create SonarQube Container
@@ -133,6 +113,29 @@ sudo docker run -itd --name sonar -p 9000:9000 sonarqube
 - Wait for SonarQube to start (check logs: `sudo docker logs sonar`).
 - Access at `http://<EC2-Public-IP>:9000`.
 - Change default password on first login.
+### SonarQube Token
+1. Start SonarQube container .
+2. Access SonarQube at `http://<EC2-Public-IP>:9000`.
+3. Login with default credentials: `admin` / `admin`.
+4. Go to **My Account > Security > Generate Tokens**.
+5. Create a token (e.g., name: "Jenkins Token").
+6. In Jenkins: 
+   - **Kind**: Secret text
+   - **Secret**: Paste the generated token
+   - **ID**: `sonar-token`
+   - **Description**: SonarQube authentication token
+
+### Jenkins Credentials
+```
+Add credentials in Jenkins:
+
+Go to:
+Manage Jenkins → Credentials
+Add:
+Username + Password OR
+Personal Access Token (recommended for GitHub)
+```
+
 
 ### Integrate SonarQube with Jenkins
 
