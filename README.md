@@ -169,6 +169,16 @@ sudo mv dependency-check /opt/dependency-check
 echo 'export PATH=$PATH:/opt/dependency-check/bin' | sudo tee -a /etc/profile.d/dependency-check.sh
 source /etc/profile.d/dependency-check.sh
 ```
+## run commands
+'''
+ ls /opt/dependency-check
+dependency-check.sh --version
+export PATH=$PATH:/opt/dependency-check/bin
+ source /etc/profile.d/dependency-check.sh
+dependency-check.sh
+sudo mkdir -p /opt/dc-data
+sudo chmod -R 777 /opt/dc-data
+'''
 
 ### Integrate with Jenkins
 
