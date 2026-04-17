@@ -89,7 +89,7 @@ Install the following plugins via **Manage Jenkins > Manage Plugins > Available*
 | Pipeline: Stage View     | Visualize pipeline stages        |
 | OWASP Dependency-Check   | Scan dependencies for vulnerabilities |
   HTML Publisher
-Restart Jenkins after installation.
+
 
 ## Credentials Setup in Jenkins
 
