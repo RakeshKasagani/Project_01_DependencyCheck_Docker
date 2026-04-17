@@ -35,14 +35,14 @@ The pipeline automates:
    sudo yum update -y
    ```
 ## Install git
-'''
+```
 sudo yum install git -y
-'''
+```
 
 ## Install maven
-'''
+```
 sudo yum install maven -y
-'''
+```
 ## Installing Jenkins
 
 Install Jenkins on the EC2 instance using the following commands:
@@ -170,7 +170,7 @@ echo 'export PATH=$PATH:/opt/dependency-check/bin' | sudo tee -a /etc/profile.d/
 source /etc/profile.d/dependency-check.sh
 ```
 ## run commands
-'''
+```
  ls /opt/dependency-check,
 dependency-check.sh --version,
 export PATH=$PATH:/opt/dependency-check/bin,
@@ -178,7 +178,7 @@ export PATH=$PATH:/opt/dependency-check/bin,
 dependency-check.sh,
 sudo mkdir -p /opt/dc-data,
 sudo chmod -R 777 /opt/dc-data,
-'''
+```
 
 ### Integrate with Jenkins
 
