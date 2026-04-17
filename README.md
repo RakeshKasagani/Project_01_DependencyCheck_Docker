@@ -20,8 +20,8 @@ The pipeline automates:
 
 ## Prerequisites
 
-- AWS EC2 instance with **t2.large** instance type
-- Attached EBS volume: **50 GB**
+- AWS EC2 instance with **t2.large** instance type (t2.medium is also enough for practice)
+- Attached EBS volume: **50 GB**  (30gb is also enough for practice)
 - Amazon Linux 2 AMI (or compatible)
 - User: `ec2-user` (with sudo privileges)
 - Internet access for package installations
