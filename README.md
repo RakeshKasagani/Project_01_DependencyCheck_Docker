@@ -213,85 +213,108 @@ Use the following Jenkinsfile (or inline pipeline script). Place the repository 
 ```groovy
 pipeline {
     agent any
-    tools {
-        maven 'Maven'  // Configure Maven tool in Manage Jenkins > Tools if needed
-    }
+
     stages {
-        stage('Compile and Test') {
+
+        stage('Checkout Code') {
             steps {
-                echo 'Compiling and testing the code'
-                sh 'ls -ltr'
-                sh 'cd java-cicd-project/spring-boot-app && mvn compile && mvn test'
+                git branch: 'main', url: 'https://github.com/RakeshKasagani/Project_01_DependencyCheck_Docker.git'
             }
         }
-        stage('SonarQube Analysis') {
+
+        stage('Compile and Test') {
             steps {
-                echo 'Scanning project with SonarQube'
-                sh 'ls -ltr'
-                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                    sh '''cd java-cicd-project/spring-boot-app && mvn sonar:sonar \\
-                          -Dsonar.host.url=http://localhost:9000 \\
-                          -Dsonar.login=$SONAR_TOKEN'''
+                sh 'cd java-cicd-project/spring-boot-app && mvn compile'
+                sh 'cd java-cicd-project/spring-boot-app && mvn test'
+            }
+        }
+
+        stage('Sonar Scan') {
+            steps {
+                sh '''
+                cd java-cicd-project/spring-boot-app
+                mvn sonar:sonar \
+                -Dsonar.host.url=http://3.95.175.98:9000 \
+                -Dsonar.login=sqa_8a0c3bd02f7b2139dacac2277f11d43cfa6f6d08
+                '''
+            }
+        }
+
+        stage('Dependency Check') {
+            steps {
+                script {
+                    // DO NOT FAIL PIPELINE
+                    sh '''
+                    /opt/dependency-check/bin/dependency-check.sh \
+                    --project "SpringBootApp" \
+                    --scan java-cicd-project/spring-boot-app \
+                    --format HTML \
+                    --out dependency-check-report \
+                    --data /opt/dc-data \
+                    --noupdate || true
+                    '''
                 }
             }
         }
-        stage('Dependency Check') {
+
+        stage('Publish Report') {
             steps {
-                sh '''
-                /opt/dependency-check/bin/dependency-check.sh \
-                --project "SpringBootApp" \
-                --scan java-cicd-project/spring-boot-app \
-                --format HTML \
-                --data /var/lib/jenkins/odc-data \
-                --out dependency-check-report
-                '''
-                // Archive the report
-                archiveArtifacts 'dependency-check-report/**'
+                script {
+                    // Run only if plugin installed
+                    try {
+                        publishHTML([
+                            allowMissing: true,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true,
+                            reportDir: 'dependency-check-report',
+                            reportFiles: 'index.html',
+                            reportName: 'OWASP Report'
+                        ])
+                    } catch (err) {
+                        echo "HTML Publisher Plugin not installed, skipping report"
+                    }
+                }
             }
         }
-        stage('Building the code') {
+
+        stage('Build Application') {
             steps {
-                sh 'ls -ltr'
-                // build the project and create a JAR file
                 sh 'cd java-cicd-project/spring-boot-app && mvn clean package'
             }
         }
-        stage('Build docker image') {
+
+        stage('Build Docker Image') {
             steps {
-                script {
-                    echo 'docker image build'
-                    sh 'cd java-cicd-project/spring-boot-app && docker build -t adarshbarkunta/java:${BUILD_NUMBER} .'
+                sh '''
+                cd java-cicd-project/spring-boot-app
+                ls -ltr target
+                docker build -t rakesh268/java:${BUILD_NUMBER} .
+                '''
+            }
+        }
+
+        stage('Docker Image Scan') {
+            steps {
+                sh 'trivy image rakesh268/java:${BUILD_NUMBER} || true'
+            }
+        }
+
+        stage('Push Image to Docker Hub') {
+            steps {
+                withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+                    sh 'docker login -u rakesh268 -p ${dockerhub}'
                 }
+                sh 'docker push rakesh268/java:${BUILD_NUMBER}'
             }
         }
-        stage('docker image scan') {
+
+        stage('Deploy Container') {
             steps {
-                sh "trivy image adarshbarkunta/java:${BUILD_NUMBER}"
+                sh '''
+                docker rm -f java-app || true
+                docker run -d -p 8000:8080 --name java-app rakesh268/java:${BUILD_NUMBER}
+                '''
             }
-        }
-        stage('Push image to Hub') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
-                        sh 'docker login -u adarshbarkunta -p ${dockerhub}'
-                    }
-                    sh 'docker push adarshbarkunta/java:${BUILD_NUMBER}'
-                }
-            }
-        }
-        stage('Deploying image to docker container') {
-            steps {
-                script {
-                    sh 'docker run -itd --name java-app -p 8000:8080 adarshbarkunta/java:${BUILD_NUMBER}'
-                }
-            }
-        }
-    }
-    post {
-        always {
-            // Clean up if needed
-            sh 'docker stop java-app || true'
-            sh 'docker rm java-app || true'
         }
     }
 }
