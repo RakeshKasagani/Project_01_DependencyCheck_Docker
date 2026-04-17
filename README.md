@@ -44,6 +44,8 @@ git --version
 ## Install maven
 ```
 sudo yum install maven -y
+
+mvn --version
 ```
 ## Installing Jenkins
 
