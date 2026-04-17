@@ -74,6 +74,7 @@ pipeline {
             steps {
                 sh '''
                 cd java-cicd-project/spring-boot-app
+                ls -ltr target
                 docker build -t rakesh268/java:${BUILD_NUMBER} .
                 '''
             }
