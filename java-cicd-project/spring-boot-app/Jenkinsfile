@@ -72,7 +72,7 @@ stage('Dependency Check') {
     steps{
         script{
             echo 'docker image build'
-  sh 'cd java-cicd-project/spring-boot-app && docker build -t rakesh/java:${BUILD_NUMBER} .'
+  sh 'cd java-cicd-project/spring-boot-app && docker build -t rakesh268/java:${BUILD_NUMBER} .'
         }
     }
 }
